@@ -1,0 +1,51 @@
+{{define "drivers"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/css/drivers.css">
+  <title>drivers</title>
+</head>
+<body>
+  <header>
+    <div class="navbar">
+        <div class="logo">
+            <a href="/base" class="logo">Formula-Z</a>
+        </div>
+        <ul>
+            <li><a href="/drivers">PILOTES</a></li>
+            <li><a href="/collection">DESIGN</a></li>
+            <li><a href="/favorites">CIRCUITS</a></li>
+            <li><a href="/">FAVORIE</a></li>
+        </ul>
+    </div>
+</header>
+
+
+
+<section>
+  <form action="/drivers" method="GET">
+      <label for="year">Sélectionnez une année :</label>
+      <select id="year" name="year">
+          {{ range .Years }}
+              <option value="{{ . }}">{{ . }}</option>
+          {{ end }}
+      </select>
+      <button type="submit">Rechercher</button>
+  </form>
+
+  <div class="container">
+      {{ range .Drivers }}
+      <div class="card">
+          <h2>{{ .GivenName }} {{ .FamilyName }}</h2>
+          <p>Numéro: {{ if .PermanentNumber }}{{ .PermanentNumber }}{{ else }}N/A{{ end }}</p>
+          <p>Nationalité: {{ .Nationality }}</p>
+      </div>
+      {{ end }}
+  </div>
+</section>
+  
+</body>
+</html>
+{{end}}

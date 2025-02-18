@@ -1,0 +1,186 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #fff;
+  background: url('http://localhost:8080/assets/images/formula_1_background.jpg') no-repeat center center/cover;
+  filter: brightness(100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centre horizontalement */
+  align-items: center; /* Centre verticalement */
+  height: 100vh;
+  
+}
+body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.29);
+  z-index: -1;
+}
+
+header {
+  background:transparent;
+  padding: 50px 60px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  text-decoration: none; 
+  color: #fff; 
+  font-size: 25px; 
+  font-weight: 300;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+}
+
+.navbar ul li {
+  margin: 0 20px;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 24px;
+  transition: color 0.3s ease;
+}
+
+.navbar ul li a:hover {
+  color: #e11900;
+}
+
+
+form {
+  display: flex;
+  flex-direction:inherit;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: -20px auto 0; /* Centre le formulaire et l'abaisse sous la navbar */
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.1); /* Fond légèrement transparent */
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Style du label */
+form label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff; /* Texte blanc */
+}
+
+/* Style du select */
+form select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+}
+
+/* Style du bouton */
+form button {
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #e10600; /* Rouge F1 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+form button:hover {
+  background-color: #b30400; /* Rouge foncé */
+}
+
+
+
+
+
+
+
+
+
+
+
+/* css des carte pilotes */
+
+/* Conteneur des cartes */
+.container {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr); /* Exactement 2 colonnes */
+  grid-template-rows: repeat(2, auto); /* Exactement 10 lignes */
+  gap: 20px; /* Espacement entre les cartes */
+  justify-content: center;
+  padding: 10px;
+  margin: 0 auto; /* Centre la grille */
+}
+
+/* Style des cartes */
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 170px; /* Hauteur fixe */
+  width: 10px;  /* Largeur fixe */
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  text-align: center;
+}
+
+/* Style du nom du pilote */
+.card h2 {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  margin-top: auto; /* Centre verticalement */
+}
+
+/* Style du numéro en bas */
+.card p {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: auto; /* Centre verticalement */
+}
+
+/* Dernier paragraphe (numéro) aligné en bas */
+.card p:last-child {
+  font-weight: bold;
+  color: #e10600; /* Rouge F1 */
+}
