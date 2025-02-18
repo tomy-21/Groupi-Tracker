@@ -87,7 +87,7 @@ form {
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
 }
 
 /* Style du label */
@@ -125,6 +125,24 @@ form button:hover {
   background-color: #b30400; /* Rouge foncé */
 }
 
+select {
+  width: 200px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+option {
+  display: flex;
+  align-items: center;
+}
+
+option img {
+  width: 20px;
+  height: auto;
+  margin-right: 10px;
+}
+
+
 
 
 
@@ -154,14 +172,19 @@ form button:hover {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  height: 170px; /* Hauteur fixe */
-  width: 100px;  /* Largeur fixe */
+  height: 185px; /* Hauteur fixe */
+  width: 150px;  /* Largeur fixe */
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 15px;
   text-align: center;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
 }
 
 /* Style du nom du pilote */

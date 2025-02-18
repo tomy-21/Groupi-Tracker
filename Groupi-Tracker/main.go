@@ -36,6 +36,8 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		year = "2024" // Année par défaut
 	}
 
+	nationality := r.URL.Query().Get("nationality") // Récupère la nationalité sélectionnée
+
 	apiURL := "http://ergast.com/api/f1/" + year + "/drivers.json"
 
 	client := http.Client{Timeout: 10 * time.Second}
@@ -58,22 +60,48 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Liste des années disponibles
 	years := []string{}
 	currentYear := time.Now().Year()
 	for y := currentYear; y >= 1950; y-- {
 		years = append(years, fmt.Sprintf("%d", y))
-
 	}
 
+	// Liste des nationalités uniques disponibles
+	nationalitiesMap := make(map[string]bool)
+	for _, driver := range result.MRData.DriverTable.Drivers {
+		nationalitiesMap[driver.Nationality] = true
+	}
+	nationalities := []string{}
+	for key := range nationalitiesMap {
+		nationalities = append(nationalities, key)
+	}
+
+	// Filtrage des pilotes par nationalité
+	var filteredDrivers []Driver
+	for _, driver := range result.MRData.DriverTable.Drivers {
+		if nationality == "" || driver.Nationality == nationality {
+			filteredDrivers = append(filteredDrivers, driver)
+		}
+	}
+
+	// Préparer les données pour le template
 	data := struct {
-		Years   []string
-		Drivers []Driver
+		Years               []string
+		Drivers             []Driver
+		Nationalities       []string
+		SelectedYear        string
+		SelectedNationality string
 	}{
-		Years:   years,
-		Drivers: result.MRData.DriverTable.Drivers,
+		Years:               years,
+		Drivers:             filteredDrivers,
+		Nationalities:       nationalities,
+		SelectedYear:        year,
+		SelectedNationality: nationality,
 	}
 
-	tmpl.ExecuteTemplate(w, "drivers", data) // 🔥 Assurez-vous que le nom correspond au fichier HTML
+	// Exécuter le template avec les données filtrées
+	tmpl.ExecuteTemplate(w, "drivers", data)
 }
 
 // Handler pour la page d'accueil
