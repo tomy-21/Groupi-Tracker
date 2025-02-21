@@ -80,7 +80,7 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 	// Filtrage des pilotes par nationalité
 	var filteredDrivers []Driver
 	for _, driver := range result.MRData.DriverTable.Drivers {
-		if nationality == "" || driver.Nationality == nationality {
+		if nationality == "All" || nationality == "" || driver.Nationality == nationality {
 			filteredDrivers = append(filteredDrivers, driver)
 		}
 	}
