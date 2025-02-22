@@ -1,0 +1,67 @@
+{{define "circuits"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuits F1</title>
+    <link rel="stylesheet" href="/assets/css/circuits.css">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <a href="/" class="logo">Formula-Z</a>
+            </div>
+            <ul>
+                <li><a href="/drivers">PILOTES</a></li>
+                <li><a href="/collection">DESIGN</a></li>
+                <li><a href="/circuits">CIRCUITS</a></li>
+                <li><a href="/favorites">FAVORIS</a></li>
+            </ul>
+        </div>
+    </header>
+        <form action="/circuits" method="get">
+            <label for="year">Sélectionnez une année :</label>
+            <select name="year" id="year">
+                {{range .Years}}
+                <option value="{{.}}" {{if eq . $.SelectedYear}}selected{{end}}>{{.}}</option>
+                {{end}}
+            </select>
+            <button type="submit">Filtrer</button>
+        </form>
+    
+    
+    <main class="circuits-container">
+        {{range .Circuits}}
+        <section class="circuit" style="background-image: url('{{.ImageURL}}');">
+            <div class="circuit-info">
+                <h1>{{.CircuitName}}</h1>
+            </div>
+        </section>
+        {{end}}
+    </main>
+    
+    <script>
+        let isScrolling = false;
+    
+        document.addEventListener("wheel", function(event) {
+            if (isScrolling) return;
+    
+            isScrolling = true;
+    
+            if (event.deltaY > 0) {
+                window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
+            } else {
+                window.scrollBy({ top: -window.innerHeight, behavior: "smooth" });
+            }
+    
+            setTimeout(() => { isScrolling = false; }, 1000);
+            event.preventDefault();
+        }, { passive: false });
+    </script>
+    
+    
+</body>
+</html>
+{{end}}

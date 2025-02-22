@@ -15,6 +15,7 @@ type Driver struct {
 	FamilyName      string `json:"familyName"`
 	PermanentNumber string `json:"permanentNumber"`
 	Nationality     string `json:"nationality"`
+	ImageURL        string
 }
 
 // Structure pour parser la réponse de l'API Ergast
@@ -23,6 +24,25 @@ type ErgastResponse struct {
 		DriverTable struct {
 			Drivers []Driver `json:"Drivers"`
 		} `json:"DriverTable"`
+	} `json:"MRData"`
+}
+
+type Circuit struct {
+	CircuitID   string `json:"circuitId"`
+	CircuitName string `json:"circuitName"`
+	Location    struct {
+		Locality string `json:"locality"`
+		Country  string `json:"country"`
+	} `json:"Location"`
+	URL      string `json:"url"`
+	ImageURL string
+}
+
+type ErgastCircuitResponse struct {
+	MRData struct {
+		CircuitTable struct {
+			Circuits []Circuit `json:"Circuits"`
+		} `json:"CircuitTable"`
 	} `json:"MRData"`
 }
 
@@ -104,6 +124,93 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "drivers", data)
 }
 
+// Handler pour la page circuits
+
+func circuitsHandler(w http.ResponseWriter, r *http.Request) {
+	// Récupération de l'année depuis les paramètres de requête
+	year := r.URL.Query().Get("year")
+	if year == "" {
+		year = "2024" // Année par défaut
+	}
+
+	apiURL := fmt.Sprintf("http://ergast.com/api/f1/%s/circuits.json", year)
+
+	client := http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(apiURL)
+	if err != nil {
+		http.Error(w, "Erreur lors de la récupération des circuits", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture de la réponse", http.StatusInternalServerError)
+		return
+	}
+
+	var result ErgastCircuitResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		http.Error(w, "Erreur lors du parsing des données", http.StatusInternalServerError)
+		return
+	}
+
+	// Associer les images des circuits
+	circuitImages := map[string]string{
+		"albert_park":   "/assets/images/circuits/melbourne.jpg",
+		"bahrain":       "/assets/images/circuits/bahrein.jpg",
+		"jeddah":        "/assets/images/circuits/jeddah.jpg",
+		"baku":          "/assets/images/circuits/baku.jpeg",
+		"shanghai":      "/assets/images/shanghai.jpg",
+		"miami":         "/assets/images/miami.jpg",
+		"imola":         "/assets/images/imola.jpg",
+		"monaco":        "/assets/images/monaco.jpg",
+		"montreal":      "/assets/images/montreal.jpg",
+		"barcelona":     "/assets/images/barcelona.jpg",
+		"red_bull_ring": "/assets/images/red_bull_ring.jpg",
+		"silverstone":   "/assets/images/silverstone.jpg",
+		"hungaroring":   "/assets/images/hungaroring.jpg",
+		"spa":           "/assets/images/spa.jpg",
+		"zandvoort":     "/assets/images/zandvoort.jpg",
+		"monza":         "/assets/images/monza.jpg",
+		"marina_bay":    "/assets/images/marina_bay.jpg",
+		"suzuka":        "/assets/images/suzuka.jpg",
+		"losail":        "/assets/images/losail.jpg",
+		"americas":      "/assets/images/circuits/austin.jpg",
+		"mexico_city":   "/assets/images/mexico_city.jpg",
+		"sao_paulo":     "/assets/images/sao_paulo.jpg",
+		"las_vegas":     "/assets/images/las_vegas.jpg",
+		"yas_marina":    "/assets/images/yas_marina.jpg",
+	}
+
+	for i, circuit := range result.MRData.CircuitTable.Circuits {
+		if img, ok := circuitImages[circuit.CircuitID]; ok {
+			result.MRData.CircuitTable.Circuits[i].ImageURL = img
+		} else {
+			result.MRData.CircuitTable.Circuits[i].ImageURL = "/assets/images/default.jpg"
+		}
+	}
+
+	// Générer une liste d'années de 1950 à aujourd'hui
+	years := []string{}
+	currentYear := time.Now().Year()
+	for y := currentYear; y >= 1950; y-- {
+		years = append(years, fmt.Sprintf("%d", y))
+	}
+
+	data := struct {
+		Years        []string
+		Circuits     []Circuit
+		SelectedYear string
+	}{
+		Years:        years,
+		Circuits:     result.MRData.CircuitTable.Circuits,
+		SelectedYear: year,
+	}
+
+	tmpl.ExecuteTemplate(w, "circuits", data)
+}
+
 // Handler pour la page d'accueil
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "base", nil)
@@ -132,7 +239,7 @@ func main() {
 	// Routes
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/home", homeHandler)
-	http.HandleFunc("/about", aboutHandler)
+	http.HandleFunc("/circuits", circuitsHandler)
 	http.HandleFunc("/collection", collectionHandler)
 	http.HandleFunc("/favorites", favoritesHandler)
 	http.HandleFunc("/drivers", driversHandler) // Nouvelle route pour récupérer les pilotes

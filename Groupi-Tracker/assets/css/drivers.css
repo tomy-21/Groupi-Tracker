@@ -163,7 +163,8 @@ option img {
   gap: 20px; /* Espacement entre les cartes */
   justify-content: center;
   padding: 10px;
-  margin: 0 auto; /* Centre la grille */
+  margin: auto; /* Centre la grille */
+  min-width: 80vh;
 }
 
 /* Style des cartes */
@@ -207,3 +208,6 @@ option img {
   font-weight: bold;
   color: #e10600; /* Rouge F1 */
 }
+
+
+
