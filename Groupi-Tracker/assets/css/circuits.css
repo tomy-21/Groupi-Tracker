@@ -18,6 +18,8 @@
     justify-content: center; /* Centre horizontalement */
     align-items: center; /* Centre verticalement */
     height: 100vh;
+    overflow-x: hidden; /* Désactive le scroll horizontal */
+  
     
   }
   body::after {
@@ -69,7 +71,7 @@
   }
   
   .navbar ul li a:hover {
-    color: #009238;
+    color: #8400d1;
   }
 
 
@@ -78,14 +80,18 @@
 
   form {
     position: absolute; /* Position flottante par rapport à la fenêtre */
-    top: 130px; /* Décalage depuis le haut de l'écran */
+    font-size: 1.5em;
+    font-weight: 800;
+    top: 150px; /* Décalage depuis le haut de l'écran */
     left: 50%; /* Centre horizontal */
     transform: translateX(-50%); /* Correction du centrage */
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 13px;
-    background-color: rgba(255, 255, 255, 0); /* Fond totalement transparent */
+    background-color: rgba(0, 0, 0, 0.1); /* Fond légèrement transparent */
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
     padding: 10px;
     z-index: 10; /* S'assure que le formulaire est au-dessus des images */
 }
@@ -99,16 +105,16 @@ select, button {
 }
 
 button {
-    background-color: #e10600;
+    background-color: #8400d1;
     color: white;
     cursor: pointer;
+    transition: 0.5s;
 }
 
 button:hover {
-    background-color: #ff1a1a;
+    background-color: #c98fff;
 }
 
-/* Assure que la première image reste collée en haut */
 
 
 
@@ -128,6 +134,7 @@ button:hover {
     justify-content: center;
     align-items: center;
     position: relative;
+    text-transform: uppercase;
 }
 
 .circuit-info {
@@ -139,7 +146,11 @@ button:hover {
 }
 
 .circuit-info h1 {
-    font-size: 4rem;
+    font-size: 3.5rem;
+    color: #ffffff;
+    font-family: "Racing Sans One", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .circuit-info p {
