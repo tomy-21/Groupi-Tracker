@@ -30,19 +30,24 @@
     <label for="year">Sélectionnez une année :</label>
     <select id="year" name="year">
         {{ range .Years }}
-        <option value="{{ . }}" {{ if eq . $.SelectedYear }}selected{{ end }}>{{ . }}</option>        {{ end }}
+        <option value="{{ . }}" {{ if eq . $.SelectedYear }}selected{{ end }}>{{ . }}</option>
+        {{ end }}
     </select>
 
     <label for="nationality">Nationalité :</label>
     <select id="nationality" name="nationality">
-    <option value="All" {{ if eq $.SelectedNationality "All" }}selected{{ end }}>All</option>
-    {{ range .Nationalities }}
-    <option value="{{ . }}" {{ if eq . $.SelectedNationality }}selected{{ end }}>{{ . }}</option>
-    {{ end }}
-</select>
+        <option value="All" {{ if eq $.SelectedNationality "All" }}selected{{ end }}>All</option>
+        {{ range .Nationalities }}
+        <option value="{{ . }}" {{ if eq . $.SelectedNationality }}selected{{ end }}>{{ . }}</option>
+        {{ end }}
+    </select>
+
+    <label for="number">Numéro pilote :</label>
+    <input type="text" id="number" name="number" value="{{ .SelectedNumber }}">
 
     <button type="submit">Rechercher</button>
 </form>
+
 
 
   <div class="container">

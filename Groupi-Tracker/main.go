@@ -209,7 +209,8 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		year = "2024" // Année par défaut
 	}
 
-	nationality := r.URL.Query().Get("nationality") // Récupère la nationalité sélectionnée
+	nationality := r.URL.Query().Get("nationality") // Filtre par nationalité
+	number := r.URL.Query().Get("number")           // Filtre par numéro
 
 	apiURL := "http://ergast.com/api/f1/" + year + "/drivers.json"
 
@@ -250,10 +251,11 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		nationalities = append(nationalities, key)
 	}
 
-	// Filtrage des pilotes par nationalité
+	// Filtrage des pilotes par nationalité et numéro
 	var filteredDrivers []Driver
 	for _, driver := range result.MRData.DriverTable.Drivers {
-		if nationality == "All" || nationality == "" || driver.Nationality == nationality {
+		if (nationality == "All" || nationality == "" || driver.Nationality == nationality) &&
+			(number == "" || driver.PermanentNumber == number) {
 			filteredDrivers = append(filteredDrivers, driver)
 		}
 	}
@@ -265,12 +267,14 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		Nationalities       []string
 		SelectedYear        string
 		SelectedNationality string
+		SelectedNumber      string
 	}{
 		Years:               years,
 		Drivers:             filteredDrivers,
 		Nationalities:       nationalities,
 		SelectedYear:        year,
 		SelectedNationality: nationality,
+		SelectedNumber:      number,
 	}
 
 	// Exécuter le template avec les données filtrées
