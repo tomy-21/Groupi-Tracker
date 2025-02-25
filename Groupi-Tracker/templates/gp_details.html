@@ -1,0 +1,50 @@
+{{ define "grandprixdetails" }}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Détails du Grand Prix - {{ .RaceName }}</title>
+  <link rel="stylesheet" href="/assets/css/gp_details.css">
+</head>
+<body>
+  <header>
+    <h1>{{ .RaceName }}</h1>
+    <a href="/results">← Retour aux Résultats</a>
+  </header>
+
+  <main>
+    <section class="race-results">
+      <h2>Classement final</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Pilote</th>
+            <th>Écurie</th>
+            <th>Points</th>
+            <th>Meilleur Tour</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .Results }}
+          <tr>
+            <td>{{ .Position }}</td>
+            <td>{{ .Driver.GivenName }} {{ .Driver.FamilyName }}</td>
+            <td>{{ .Constructor.Name }}</td>
+            <td>{{ .Points }}</td>
+            <td>
+              {{ if .FastestLap }}
+                🏁 {{ .FastestLap.Time.Time }} (Tour {{ .FastestLap.Lap }})
+              {{ else }}
+                Pas de meilleur tour
+              {{ end }}
+            </td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
+{{ end }}

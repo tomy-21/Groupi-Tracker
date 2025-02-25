@@ -1,0 +1,63 @@
+{{define "results"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Résultats</title>
+    <link rel="stylesheet" href="/assets/css/results.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <div class="navbar">
+        <div class="logo">
+          <a href="/home" class="logo">Formula-Z</a>
+        </div>
+        <ul>
+          <li><a href="/drivers">PILOTES</a></li>
+          <li><a href="/results">RESULTS</a></li>
+          <li><a href="/circuits">CIRCUITS</a></li>
+          <li><a href="/">FAVORIE</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="container">
+      <h1>Résultats des Grands Prix</h1>
+
+      <!-- Sélection de l'année -->
+      <form id="yearForm" action="/results" method="get">
+        <label for="year">Sélectionnez une année :</label>
+        <select name="year" id="year" onchange="this.form.submit()">
+          {{range .Years}}
+          <option value="{{.}}" {{if eq $.SelectedYear .}}selected{{end}}>
+            {{.}}
+          </option>
+          {{end}}
+        </select>
+      </form>
+
+      <!-- Liste des Grands Prix -->
+      <section class="gp-list">
+        <h2>Grands Prix de l'année {{.SelectedYear}}</h2>
+        {{if .Races}}
+        <ul>
+          {{range .Races}}
+          <li class="gp-item">
+            <a href="/results/details?year={{$.SelectedYear}}&round={{.Round}}">
+              <strong>{{.RaceName}}</strong> - {{.Circuit.Location.Country}} - {{.Date}}
+            </a>
+          </li>
+          {{end}}
+        </ul>
+        {{else}}
+        <p>Aucun Grand Prix trouvé pour cette année.</p>
+        {{end}}
+      </section>
+    </main>
+  </body>
+</html>
+{{end}}

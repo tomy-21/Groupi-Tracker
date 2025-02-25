@@ -46,6 +46,159 @@ type ErgastCircuitResponse struct {
 	} `json:"MRData"`
 }
 
+//  result page
+
+type Race struct {
+	RaceName string `json:"raceName"`
+	Circuit  struct {
+		CircuitName string `json:"circuitName"`
+		Location    struct {
+			Country string `json:"country"`
+		} `json:"Location"`
+	} `json:"Circuit"`
+	Date  string `json:"date"`
+	Round string `json:"round"`
+}
+
+type RaceTableResponse struct {
+	MRData struct {
+		RaceTable struct {
+			Races []Race `json:"Races"`
+		} `json:"RaceTable"`
+	} `json:"MRData"`
+}
+type FastestLap struct {
+	Rank string `json:"rank"`
+	Lap  string `json:"lap"`
+	Time struct {
+		Time string `json:"time"`
+	} `json:"Time"`
+	AverageSpeed struct {
+		Units string `json:"units"`
+		Speed string `json:"speed"`
+	} `json:"AverageSpeed"`
+}
+
+type RaceResult struct {
+	Position string `json:"position"`
+	Driver   struct {
+		GivenName  string `json:"givenName"`
+		FamilyName string `json:"familyName"`
+	} `json:"Driver"`
+	FastestLap  *FastestLap `json:"FastestLap,omitempty"`
+	Constructor struct {
+		Name string `json:"name"`
+	} `json:"Constructor"`
+	Points string `json:"points"`
+}
+
+type RaceResultResponse struct {
+	MRData struct {
+		RaceTable struct {
+			Races []struct {
+				RaceName string       `json:"raceName"`
+				Results  []RaceResult `json:"Results"`
+			} `json:"Races"`
+		} `json:"RaceTable"`
+	} `json:"MRData"`
+}
+
+// result handler
+
+func resultsHandler(w http.ResponseWriter, r *http.Request) {
+	year := r.URL.Query().Get("year")
+	if year == "" {
+		year = "2024"
+	}
+
+	apiURL := fmt.Sprintf("http://ergast.com/api/f1/%s.json", year)
+	client := http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(apiURL)
+	if err != nil {
+		http.Error(w, "Erreur lors de la récupération des résultats", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture des données", http.StatusInternalServerError)
+		return
+	}
+
+	var result RaceTableResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		http.Error(w, "Erreur lors du parsing des données", http.StatusInternalServerError)
+		return
+	}
+
+	years := []string{}
+	currentYear := time.Now().Year()
+	for y := currentYear; y >= 1950; y-- {
+		years = append(years, fmt.Sprintf("%d", y))
+	}
+
+	data := struct {
+		Years        []string
+		SelectedYear string
+		Races        []Race
+	}{
+		Years:        years,
+		SelectedYear: year,
+		Races:        result.MRData.RaceTable.Races,
+	}
+
+	tmpl.ExecuteTemplate(w, "results", data)
+}
+
+// Handler pour les détails du Grand Prix
+func grandPrixDetailsHandler(w http.ResponseWriter, r *http.Request) {
+	year := r.URL.Query().Get("year")
+	round := r.URL.Query().Get("round")
+	if year == "" || round == "" {
+		http.Error(w, "Année ou manche manquante", http.StatusBadRequest)
+		return
+	}
+
+	apiURL := fmt.Sprintf("http://ergast.com/api/f1/%s/%s/results.json", year, round)
+	client := http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(apiURL)
+	if err != nil {
+		http.Error(w, "Erreur lors de la récupération des détails du Grand Prix", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture des données", http.StatusInternalServerError)
+		return
+	}
+
+	var result RaceResultResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		http.Error(w, "Erreur lors du parsing des données", http.StatusInternalServerError)
+		return
+	}
+
+	if len(result.MRData.RaceTable.Races) == 0 {
+		http.Error(w, "Aucun résultat trouvé", http.StatusNotFound)
+		return
+	}
+
+	race := result.MRData.RaceTable.Races[0]
+
+	data := struct {
+		RaceName string
+		Results  []RaceResult
+	}{
+		RaceName: race.RaceName,
+		Results:  race.Results,
+	}
+
+	tmpl.ExecuteTemplate(w, "grandprixdetails", data)
+}
+
 // Template global
 var tmpl = template.Must(template.ParseGlob("templates/*.html"))
 
@@ -157,7 +310,7 @@ func circuitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Associer les images des circuits
 	circuitImages := map[string]string{
-		"albert_park":    "/assets/images/circuits/melbourne.jpg",
+		"albert_park":    "/assets/images/circuits/albert_park.webp",
 		"nurburgring":    "/assets/images/circuits/nurburgring.jpg",
 		"bahrain":        "/assets/images/circuits/bahrein.jpg",
 		"jeddah":         "/assets/images/circuits/jeddah.jpg",
@@ -188,6 +341,9 @@ func circuitsHandler(w http.ResponseWriter, r *http.Request) {
 		"portimao":       "/assets/images/circuits/portimao.webp",
 		"ricard":         "/assets/images/circuits/ricard.jpg",
 		"sochi":          "/assets/images/circuits/sochi.avif",
+		"adelaide":       "/assets/images/circuits/adelaide.jpg",
+		"phoenix":        "/assets/images/circuits/phoenix.jpeg",
+		"sepang":         "/assets/images/circuits/sepang.jpg",
 	}
 
 	for i, circuit := range result.MRData.CircuitTable.Circuits {
@@ -228,11 +384,6 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "about.html", nil)
 }
 
-// Handler pour la page "Design"
-func collectionHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "collection.html", nil)
-}
-
 // Handler pour la page "Circuits"
 func favoritesHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "favorites.html", nil)
@@ -247,10 +398,10 @@ func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/home", homeHandler)
 	http.HandleFunc("/circuits", circuitsHandler)
-	http.HandleFunc("/collection", collectionHandler)
+	http.HandleFunc("/results", resultsHandler)
+	http.HandleFunc("/results/details", grandPrixDetailsHandler)
 	http.HandleFunc("/favorites", favoritesHandler)
-	http.HandleFunc("/drivers", driversHandler) // Nouvelle route pour récupérer les pilotes
-
+	http.HandleFunc("/drivers", driversHandler)
 	// Lancer le serveur
 	port := ":8080"
 	log.Println("Serveur démarré sur http://localhost" + port)

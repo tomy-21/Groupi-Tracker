@@ -1,0 +1,152 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #fff;
+    background: url('http://localhost:8080/assets/images/results_f1_background.webp') no-repeat center center/cover;
+    filter: brightness(100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement */
+    height: 141vh;
+    
+  }
+  body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.29);
+    z-index: -1;
+  }
+  
+  header {
+    background:transparent;
+    padding: 50px 60px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .logo {
+    text-decoration: none; 
+    color: #fff; 
+    font-size: 25px; 
+    font-weight: 300;
+  }
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .navbar ul {
+    list-style: none;
+    display: flex;
+  }
+  
+  .navbar ul li {
+    margin: 0 20px;
+  }
+  
+  .navbar ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 24px;
+    transition: color 0.3s ease;
+  }
+  
+  .navbar ul li a:hover {
+    color: #00b5f7;
+  }
+
+  /* form */
+
+  form {
+    position:relative; /* Position flottante par rapport à la fenêtre */
+    font-size: 1.5em;
+    font-weight: 800;
+    top: 15px; /* Décalage depuis le haut de l'écran */
+    left: 50%; /* Centre horizontal */
+    transform: translateX(-50%); /* Correction du centrage */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 13px;
+    padding: 10px;
+    z-index: 10; /* S'assure que le formulaire est au-dessus des images */
+}
+
+
+
+
+  /* style des lignes de results  */
+
+   /* Conteneur principal */
+.container {
+  width: 80%;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+/* Titre principal */
+h1 {
+    font-family: "Racing Sans One", serif;
+    font-weight: 400;
+    font-style: normal;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Liste des Grands Prix */
+.gp-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Chaque élément de Grand Prix */
+.gp-item {
+  background-color: rgba(0, 0, 0, 0.7); /* Fond noir transparent */
+  height: 40px;
+  display: flex;
+  align-items: center; /* Centre le texte verticalement */
+  padding: 0 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+/* Texte adaptatif */
+.gp-item a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem; /* Taille de texte adaptée à la hauteur */
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: 0.3s;
+}
+
+/* Effet au survol */
+.gp-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transform:scale(105%);
+}
