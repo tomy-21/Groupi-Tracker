@@ -220,3 +220,18 @@ option img {
 
 
 
+/* boutons favorites : */
+
+.favorite-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: gray;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.favorite-btn.favorited {
+  color: red;
+  transform: scale(1.1);
+}

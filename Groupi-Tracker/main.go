@@ -18,6 +18,8 @@ type Driver struct {
 	ImageURL        string
 }
 
+var favoriteDrivers []Driver
+
 // Structure pour parser la réponse de l'API Ergast
 type ErgastResponse struct {
 	MRData struct {
@@ -281,6 +283,8 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "drivers", data)
 }
 
+// fonction d'ajout en favorie
+
 // Handler pour la page circuits
 
 func circuitsHandler(w http.ResponseWriter, r *http.Request) {
@@ -323,6 +327,7 @@ func circuitsHandler(w http.ResponseWriter, r *http.Request) {
 		"miami":          "/assets/images/circuits/miami.jpg",
 		"imola":          "/assets/images/circuits/imola.jpg",
 		"monaco":         "/assets/images/circuits/monaco.webp",
+		"indianapolis":   "/assets/images/circuits/indianapolis.webp",
 		"villeneuve":     "/assets/images/circuits/villeneuve.jpg",
 		"mugello":        "/assets/images/circuits/mugello.jpg",
 		"catalunya":      "/assets/images/circuits/catalunya.png",
@@ -378,6 +383,34 @@ func circuitsHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "circuits", data)
 }
 
+//fonctionnalité Favorites
+
+func addFavoriteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var driver Driver
+	err := json.NewDecoder(r.Body).Decode(&driver)
+	if err != nil {
+		http.Error(w, "Erreur de décodage JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Vérifier si le pilote est déjà en favori
+	for _, d := range favoriteDrivers {
+		if d.PermanentNumber == driver.PermanentNumber {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+	}
+
+	// Ajouter le pilote à la liste des favoris
+	favoriteDrivers = append(favoriteDrivers, driver)
+	w.WriteHeader(http.StatusOK)
+}
+
 // Handler pour la page d'accueil
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "base", nil)
@@ -388,9 +421,8 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "about.html", nil)
 }
 
-// Handler pour la page "Circuits"
 func favoritesHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "favorites.html", nil)
+	tmpl.ExecuteTemplate(w, "favorites", favoriteDrivers)
 }
 
 func main() {
@@ -409,5 +441,7 @@ func main() {
 	// Lancer le serveur
 	port := ":8080"
 	log.Println("Serveur démarré sur http://localhost" + port)
+	http.HandleFunc("/add_favorite", addFavoriteHandler)
+
 	log.Fatal(http.ListenAndServe(port, nil))
 }
