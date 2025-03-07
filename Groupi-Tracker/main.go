@@ -411,6 +411,33 @@ func addFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+//retirer un pilote des favorie
+
+func removeFavoriteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var driver Driver
+	err := json.NewDecoder(r.Body).Decode(&driver)
+	if err != nil {
+		http.Error(w, "Erreur de décodage JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Filtrer la liste pour supprimer le pilote
+	newFavorites := []Driver{}
+	for _, d := range favoriteDrivers {
+		if d.PermanentNumber != driver.PermanentNumber {
+			newFavorites = append(newFavorites, d)
+		}
+	}
+	favoriteDrivers = newFavorites
+
+	w.WriteHeader(http.StatusOK)
+}
+
 // Handler pour la page d'accueil
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "base", nil)
@@ -437,6 +464,7 @@ func main() {
 	http.HandleFunc("/results", resultsHandler)
 	http.HandleFunc("/results/details", grandPrixDetailsHandler)
 	http.HandleFunc("/favorites", favoritesHandler)
+	http.HandleFunc("/remove_favorite", removeFavoriteHandler)
 	http.HandleFunc("/drivers", driversHandler)
 	// Lancer le serveur
 	port := ":8080"

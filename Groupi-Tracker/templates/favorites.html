@@ -4,6 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/favorites.css" />
+    <!-- Police d'ecriture -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:wght@200&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300&family=Sixtyfour&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Racing+Sans+One&display=swap"
+      rel="stylesheet"
+    />
     <title>Favoris</title>
 </head>
 <body>
@@ -22,11 +34,32 @@
     </header>
 
     <h1>Pilotes favoris</h1>
-    <ul>
+    <ul class="liste">
         {{range .}}
-        <li>{{.GivenName}} {{.FamilyName}} (Numéro: {{.PermanentNumber}})</li>
+        <li>
+            {{.GivenName}} {{.FamilyName}} (Numéro: {{.PermanentNumber}})
+            <button onclick="removeFavorite('{{.PermanentNumber}}')">❌ Retirer</button>
+        </li>
         {{end}}
     </ul>
+    <script>
+        function removeFavorite(id) {
+            fetch("/remove_favorite", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ permanentNumber: id })
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload(); // Recharge la page pour mettre à jour la liste
+                } else {
+                    console.error("Erreur lors de la suppression du favori");
+                }
+            })
+            .catch(error => console.error("Erreur réseau:", error));
+        }
+    </script>
+    
     
 </body>
 </html>

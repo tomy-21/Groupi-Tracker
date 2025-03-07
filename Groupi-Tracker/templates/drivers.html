@@ -82,19 +82,29 @@
         </script>
 
 <script>
-    function toggleFavorite(button, id, givenName, familyName) {
-        // Vérifie si le bouton est déjà en mode favori
-        if (button.classList.contains("favorited")) {
-            button.classList.remove("favorited");
-            button.innerHTML = "♡"; // Cœur vide
-            removeFromFavorites(id); // Retirer des favoris (à définir)
-        } else {
-            button.classList.add("favorited");
-            button.innerHTML = "❤️"; // Cœur rempli
-            addToFavorites(id, givenName, familyName); // Ajouter aux favoris
-        }
+    function toggleFavorite(button, number, givenName, familyName) {
+        const isFavorite = button.classList.contains("favorited");
+
+        const url = isFavorite ? "/remove_favorite" : "/add_favorite";
+        const method = "POST";
+        const headers = { "Content-Type": "application/json" };
+        const body = JSON.stringify({
+            permanentNumber: number,
+            givenName: givenName,
+            familyName: familyName
+        });
+
+        fetch(url, { method, headers, body })
+            .then(response => {
+                if (response.ok) {
+                    button.classList.toggle("favorited");
+                    button.textContent = isFavorite ? "♡" : "❤️";
+                }
+            })
+            .catch(error => console.error("Erreur:", error));
     }
 </script>
+
 
         
   </div>
