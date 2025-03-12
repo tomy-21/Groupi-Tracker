@@ -26,13 +26,15 @@
 
 <section>
 
-  <form action="/drivers" method="GET">
+  <form action="/drivers" method="GET" class="filtres">
     <label for="year">Sélectionnez une année :</label>
-    <select id="year" name="year">
-        {{ range .Years }}
-        <option value="{{ . }}" {{ if eq . $.SelectedYear }}selected{{ end }}>{{ . }}</option>
-        {{ end }}
-    </select>
+<select id="year" name="year">
+    <option value="All" {{ if eq $.SelectedYear "All" }}selected{{ end }}>All</option>
+    {{ range .Years }}
+    <option value="{{ . }}" {{ if eq . $.SelectedYear }}selected{{ end }}>{{ . }}</option>
+    {{ end }}
+</select>
+
 
     <label for="nationality">Nationalité :</label>
     <select id="nationality" name="nationality">
@@ -46,6 +48,10 @@
     <input type="text" id="number" name="number" value="{{ .SelectedNumber }}">
 
     <button type="submit">Rechercher</button>
+
+    <label for="name">Rechercher par nom :</label>
+  <input type="text" id="name" name="name" value="{{ .SelectedName }}">
+  <button type="submit">Rechercher</button>
 </form>
 
 
@@ -56,60 +62,28 @@
           <h2>{{ .GivenName }} {{ .FamilyName }}</h2>
           <p>Numéro: {{ if .PermanentNumber }}{{ .PermanentNumber }}{{ else }}N/A{{ end }}</p>
           <p>Nationalité: {{ .Nationality }}</p>
-          <button class="favorite-btn" data-id="{{.PermanentNumber}}" onclick="toggleFavorite(this, '{{.PermanentNumber}}', '{{.GivenName}}', '{{.FamilyName}}')">
-            ♡
-        </button>
+          <form action="/add_favorite" method="POST" class="favorite-form">
+            <input type="hidden" name="permanentNumber" value="{{.PermanentNumber}}">
+            <input type="hidden" name="givenName" value="{{.GivenName}}">
+            <input type="hidden" name="familyName" value="{{.FamilyName}}">
+            <button type="submit" 
+                    class="favorite-btn" 
+                    id="favorite-{{.PermanentNumber}}" 
+                    data-permanent-number="{{.PermanentNumber}}">
+                ♡
+            </button>
+        </form>
+        
+        
+        
         
       </div>
       {{ end }}
-
-      <script>
-        function addToFavorites(number, givenName, familyName) {
-            fetch("/add_favorite", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    permanentNumber: number,
-                    givenName: givenName,
-                    familyName: familyName
-                })
-            }).then(response => {
-                if (response.ok) {
-                    alert("Pilote ajouté aux favoris !");
-                }
-            });
-        }
-        </script>
-
-<script>
-    function toggleFavorite(button, number, givenName, familyName) {
-        const isFavorite = button.classList.contains("favorited");
-
-        const url = isFavorite ? "/remove_favorite" : "/add_favorite";
-        const method = "POST";
-        const headers = { "Content-Type": "application/json" };
-        const body = JSON.stringify({
-            permanentNumber: number,
-            givenName: givenName,
-            familyName: familyName
-        });
-
-        fetch(url, { method, headers, body })
-            .then(response => {
-                if (response.ok) {
-                    button.classList.toggle("favorited");
-                    button.textContent = isFavorite ? "♡" : "❤️";
-                }
-            })
-            .catch(error => console.error("Erreur:", error));
-    }
-</script>
-
-
         
   </div>
 </section>
-  
+<script src="/assets/script/drivers.js"></script>
+
 </body>
 </html>
 {{end}}

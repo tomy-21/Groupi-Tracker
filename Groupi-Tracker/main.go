@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -211,10 +212,11 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		year = "2024" // Année par défaut
 	}
 
-	nationality := r.URL.Query().Get("nationality") // Filtre par nationalité
-	number := r.URL.Query().Get("number")           // Filtre par numéro
+	nationality := r.URL.Query().Get("nationality")
+	number := r.URL.Query().Get("number")
+	name := r.URL.Query().Get("name")
 
-	apiURL := "http://ergast.com/api/f1/" + year + "/drivers.json"
+	apiURL := fmt.Sprintf("http://ergast.com/api/f1/%s/drivers.json", year)
 
 	client := http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(apiURL)
@@ -236,6 +238,11 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if result.MRData.DriverTable.Drivers == nil {
+		http.Error(w, "Aucun pilote trouvé", http.StatusNotFound)
+		return
+	}
+
 	// Liste des années disponibles
 	years := []string{}
 	currentYear := time.Now().Year()
@@ -243,26 +250,26 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		years = append(years, fmt.Sprintf("%d", y))
 	}
 
-	// Liste des nationalités uniques disponibles
+	// Liste des nationalités disponibles
 	nationalitiesMap := make(map[string]bool)
 	for _, driver := range result.MRData.DriverTable.Drivers {
 		nationalitiesMap[driver.Nationality] = true
 	}
-	nationalities := []string{}
+	nationalities := []string{"All"}
 	for key := range nationalitiesMap {
 		nationalities = append(nationalities, key)
 	}
 
-	// Filtrage des pilotes par nationalité et numéro
+	// Filtrage des pilotes
 	var filteredDrivers []Driver
 	for _, driver := range result.MRData.DriverTable.Drivers {
 		if (nationality == "All" || nationality == "" || driver.Nationality == nationality) &&
-			(number == "" || driver.PermanentNumber == number) {
+			(number == "" || driver.PermanentNumber == number) &&
+			(name == "" || containsIgnoreCase(driver.GivenName+" "+driver.FamilyName, name)) {
 			filteredDrivers = append(filteredDrivers, driver)
 		}
 	}
 
-	// Préparer les données pour le template
 	data := struct {
 		Years               []string
 		Drivers             []Driver
@@ -270,6 +277,7 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		SelectedYear        string
 		SelectedNationality string
 		SelectedNumber      string
+		SelectedName        string
 	}{
 		Years:               years,
 		Drivers:             filteredDrivers,
@@ -277,10 +285,15 @@ func driversHandler(w http.ResponseWriter, r *http.Request) {
 		SelectedYear:        year,
 		SelectedNationality: nationality,
 		SelectedNumber:      number,
+		SelectedName:        name,
 	}
 
-	// Exécuter le template avec les données filtrées
 	tmpl.ExecuteTemplate(w, "drivers", data)
+}
+
+// Fonction pour comparer les noms sans tenir compte de la casse
+func containsIgnoreCase(str, substr string) bool {
+	return strings.Contains(strings.ToLower(str), strings.ToLower(substr))
 }
 
 // fonction d'ajout en favorie
@@ -353,6 +366,9 @@ func circuitsHandler(w http.ResponseWriter, r *http.Request) {
 		"adelaide":       "/assets/images/circuits/adelaide.jpg",
 		"phoenix":        "/assets/images/circuits/phoenix.jpeg",
 		"sepang":         "/assets/images/circuits/sepang.jpg",
+		"bremgarten":     "/assets/images/circuits/bremgarten.jpg",
+		"reims":          "/assets/images/circuits/reims.webp",
+		"pedralbes":      "/assets/images/circuits/pedralbes.jpg",
 	}
 
 	for i, circuit := range result.MRData.CircuitTable.Circuits {
@@ -391,27 +407,31 @@ func addFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var driver Driver
-	err := json.NewDecoder(r.Body).Decode(&driver)
-	if err != nil {
-		http.Error(w, "Erreur de décodage JSON", http.StatusBadRequest)
-		return
-	}
+	// Récupérer les données du formulaire
+	r.ParseForm()
+	permanentNumber := r.FormValue("permanentNumber")
+	givenName := r.FormValue("givenName")
+	familyName := r.FormValue("familyName")
 
-	// Vérifier si le pilote est déjà en favori
-	for _, d := range favoriteDrivers {
-		if d.PermanentNumber == driver.PermanentNumber {
-			w.WriteHeader(http.StatusOK)
+	// Vérifier si le pilote est déjà dans les favoris
+	for _, driver := range favoriteDrivers {
+		if driver.PermanentNumber == permanentNumber {
+			http.Redirect(w, r, "/favorites", http.StatusSeeOther)
 			return
 		}
 	}
 
-	// Ajouter le pilote à la liste des favoris
-	favoriteDrivers = append(favoriteDrivers, driver)
-	w.WriteHeader(http.StatusOK)
-}
+	// Ajouter le pilote
+	newDriver := Driver{
+		GivenName:       givenName,
+		FamilyName:      familyName,
+		PermanentNumber: permanentNumber,
+	}
+	favoriteDrivers = append(favoriteDrivers, newDriver)
+	fmt.Println("Ajout du favori :", permanentNumber, givenName, familyName)
 
-//retirer un pilote des favorie
+	http.Redirect(w, r, "/drivers", http.StatusSeeOther) // Redirige vers la page des pilotes
+}
 
 func removeFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -419,24 +439,22 @@ func removeFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var driver Driver
-	err := json.NewDecoder(r.Body).Decode(&driver)
-	if err != nil {
-		http.Error(w, "Erreur de décodage JSON", http.StatusBadRequest)
-		return
-	}
+	r.ParseForm()
+	permanentNumber := r.FormValue("permanentNumber")
 
-	// Filtrer la liste pour supprimer le pilote
-	newFavorites := []Driver{}
-	for _, d := range favoriteDrivers {
-		if d.PermanentNumber != driver.PermanentNumber {
-			newFavorites = append(newFavorites, d)
+	// Filtrer la liste des favoris
+	var updatedFavorites []Driver
+	for _, driver := range favoriteDrivers {
+		if driver.PermanentNumber != permanentNumber {
+			updatedFavorites = append(updatedFavorites, driver)
 		}
 	}
-	favoriteDrivers = newFavorites
+	favoriteDrivers = updatedFavorites
 
-	w.WriteHeader(http.StatusOK)
+	http.Redirect(w, r, "/favorites", http.StatusSeeOther)
 }
+
+//retirer un pilote des favorie
 
 // Handler pour la page d'accueil
 func homeHandler(w http.ResponseWriter, r *http.Request) {

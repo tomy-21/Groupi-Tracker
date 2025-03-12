@@ -129,9 +129,6 @@ form button {
   transition: 0.3s;
 }
 
-form button:hover {
-  background-color: #b30400; /* Rouge foncé */
-}
 
 select {
   width: 200px;
@@ -149,7 +146,6 @@ option img {
   height: auto;
   margin-right: 10px;
 }
-
 
 
 
@@ -215,21 +211,62 @@ option img {
 /* Dernier paragraphe (numéro) aligné en bas */
 .card p:last-child {
   font-weight: bold;
-  color: #e10600; /* Rouge F1 */
+  color: #ffffff; /* Rouge F1 */
 }
 
 
 
-/* boutons favorites : */
+button {
+  background: none; /* Supprime le fond */
+  border: none; /* Supprime la bordure */
+  font-size: 24px; /* Agrandit le cœur */
+  cursor: pointer; /* Curseur de type "cliquable" */
+  transition: transform 0.2s ease-in-out; /* Animation fluide */
+}
 
-    .favorite-btn {
-        font-size: 24px;
-        border: none;
-        background: none;
-        cursor: pointer;
-    }
-    .favorited {
-        color: red;
-    }
 
+.favorite-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white; /* Par défaut */
+  transition: transform 0.2s ease-in-out, color 0.3s ease;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.5); /* Effet zoom au survol */
+}
+
+.favorite-form {
+  background: none !important; /* Supprime le fond transparent */
+  box-shadow: none !important; /* Supprime l'ombre */
+  padding: 0; /* Évite l'espace inutile */
+  display: inline-block; /* S'adapte à la taille du bouton */
+}
+
+.favorite-btn.active {
+  color: red; /* Cœur rouge si favori */
+}
+
+#name {
+  width: 250px; /* Augmente la largeur de la barre de recherche */
+}
+
+
+
+.filtres {
+  display: flex;
+  flex-wrap: wrap; /* Permet l'ajustement sur petits écrans */
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px auto 0; /* Ajout de margin-top de 25px */
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.1); /* Fond légèrement transparent */
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+}
 

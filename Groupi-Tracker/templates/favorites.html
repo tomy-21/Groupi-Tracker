@@ -37,28 +37,15 @@
     <ul class="liste">
         {{range .}}
         <li>
-            {{.GivenName}} {{.FamilyName}} (Numéro: {{.PermanentNumber}})
-            <button onclick="removeFavorite('{{.PermanentNumber}}')">❌ Retirer</button>
+            <p>{{ .GivenName }} {{ .FamilyName }} - Numéro: {{ if .PermanentNumber }}{{ .PermanentNumber }}{{ else }}N/A{{ end }}</p>
+            <form action="/remove_favorite" method="POST">
+                <input type="hidden" name="permanentNumber" value="{{.PermanentNumber}}">
+                <button type="submit">❌ Retirer</button>
+            </form>
         </li>
         {{end}}
     </ul>
-    <script>
-        function removeFavorite(id) {
-            fetch("/remove_favorite", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ permanentNumber: id })
-            })
-            .then(response => {
-                if (response.ok) {
-                    location.reload(); // Recharge la page pour mettre à jour la liste
-                } else {
-                    console.error("Erreur lors de la suppression du favori");
-                }
-            })
-            .catch(error => console.error("Erreur réseau:", error));
-        }
-    </script>
+    
     
     
 </body>
