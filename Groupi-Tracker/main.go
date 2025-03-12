@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -114,6 +115,18 @@ func resultsHandler(w http.ResponseWriter, r *http.Request) {
 		year = "2024"
 	}
 
+	// Récupérer le numéro de la page (par défaut 1)
+	pageStr := r.URL.Query().Get("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	// Nombre de GP par page
+	limit := 10
+	offset := (page - 1) * limit
+
+	// Récupérer les données de l'API
 	apiURL := fmt.Sprintf("http://ergast.com/api/f1/%s.json", year)
 	client := http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(apiURL)
@@ -135,20 +148,40 @@ func resultsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Gérer la pagination
+	totalRaces := len(result.MRData.RaceTable.Races)
+	totalPages := (totalRaces + limit - 1) / limit // Calcul du nombre total de pages
+
+	// Découpage des GP affichés sur la page actuelle
+	var paginatedRaces []Race
+	if offset < totalRaces {
+		end := offset + limit
+		if end > totalRaces {
+			end = totalRaces
+		}
+		paginatedRaces = result.MRData.RaceTable.Races[offset:end]
+	}
+
+	// Génération des années disponibles (1950 -> Année actuelle)
 	years := []string{}
 	currentYear := time.Now().Year()
 	for y := currentYear; y >= 1950; y-- {
 		years = append(years, fmt.Sprintf("%d", y))
 	}
 
+	// Struct des données envoyées au template
 	data := struct {
 		Years        []string
 		SelectedYear string
 		Races        []Race
+		CurrentPage  int
+		TotalPages   int
 	}{
 		Years:        years,
 		SelectedYear: year,
-		Races:        result.MRData.RaceTable.Races,
+		Races:        paginatedRaces,
+		CurrentPage:  page,
+		TotalPages:   totalPages,
 	}
 
 	tmpl.ExecuteTemplate(w, "results", data)
@@ -202,8 +235,13 @@ func grandPrixDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "grandprixdetails", data)
 }
 
+var funcMap = template.FuncMap{
+	"add": func(a, b int) int { return a + b },
+	"sub": func(a, b int) int { return a - b },
+}
+var tmpl = template.Must(template.New("").Funcs(funcMap).ParseGlob("templates/*.html"))
+
 // Template global
-var tmpl = template.Must(template.ParseGlob("templates/*.html"))
 
 // Handler pour la page des pilotes
 func driversHandler(w http.ResponseWriter, r *http.Request) {

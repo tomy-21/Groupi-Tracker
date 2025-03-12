@@ -57,6 +57,23 @@
         <p>Aucun Grand Prix trouvé pour cette année.</p>
         {{end}}
       </section>
+
+<!-- Pagination -->
+<div class="pagination">
+  {{if gt .TotalPages 1}}
+      {{if gt .CurrentPage 1}}
+          <a href="/results?year={{.SelectedYear}}&page={{sub .CurrentPage 1}}">← Précédent</a>
+      {{end}}
+
+      Page {{.CurrentPage}} sur {{.TotalPages}}
+
+      {{if lt .CurrentPage .TotalPages}}
+          <a href="/results?year={{.SelectedYear}}&page={{add .CurrentPage 1}}">Suivant →</a>
+      {{end}}
+  {{end}}
+</div>
+
+
     </main>
   </body>
 </html>

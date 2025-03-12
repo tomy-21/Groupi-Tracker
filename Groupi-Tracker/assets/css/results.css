@@ -19,7 +19,7 @@
     flex-direction: column;
     justify-content: center; /* Centre horizontalement */
     align-items: center; /* Centre verticalement */
-    height: 141vh;
+    height: 100vh;
     
   }
   body::after {
@@ -149,4 +149,26 @@ h1 {
   background-color: rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transform:scale(105%);
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+}
+
+.pagination a {
+  text-decoration: none;
+  padding: 8px 12px;
+  background-color: #00345f76;
+  color: white;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.pagination a:hover {
+  background-color: #6c0bfe7c;
 }
