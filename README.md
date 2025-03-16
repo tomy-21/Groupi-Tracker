@@ -10,7 +10,7 @@ Groupie Tracker est une application web développée en **Golang**, permettant d
 ✅ Gestion des erreurs en cas d’indisponibilité de l’API  
 ✅ Interface simple et user-friendly  
 
----  
+---
 
 ## 📡 API utilisée  
 L’application exploite l’**API Ergast Formula One**, qui fournit des données sur la Formule 1 depuis 1950.  
@@ -22,7 +22,7 @@ L’application exploite l’**API Ergast Formula One**, qui fournit des donnée
 - **Circuits** : [`/circuits`](http://ergast.com/api/f1/{{year}}/circuits) → Liste des circuits par saison  
 - **Résultats de courses** : [`/results`](http://ergast.com/api/f1/{{year}}/{{round}}/results) → Résultats d’un Grand Prix  
 
----  
+---
 
 ## 🛠️ Installation & Exécution  
 > **Prérequis :** Golang installé sur votre machine  
@@ -30,9 +30,6 @@ L’application exploite l’**API Ergast Formula One**, qui fournit des donnée
 ### 1️⃣ Clonez le projet  
 ```sh
 git clone https://github.com/tomy-21/Groupi-Tracker.git
-cd Groupi-Tracker
-
-```sh
 cd Groupi-Tracker
 2️⃣ Lancez l’application
 sh
@@ -73,7 +70,8 @@ Stockage des favoris : J’ai utilisé des fichiers JSON pour enregistrer la lis
 🔗 Lien du dépôt GitHub : Groupi-Tracker
 
 💡 Améliorations futures possibles
-Ajouter un mode sombre pour améliorer l’UX
-Intégrer un graphique des performances des pilotes
-Héberger le projet en ligne pour un accès public
+✅ Ajouter un mode sombre pour améliorer l’UX
+✅ Intégrer un graphique des performances des pilotes
+✅ Héberger le projet en ligne pour un accès public
+
 🔥 Merci d’avoir lu ce README ! 🚀

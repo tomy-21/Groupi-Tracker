@@ -1,98 +1,77 @@
-🏎️ Groupie Tracker
-Un site web permettant d'explorer les pilotes de F1, circuits, résultats de courses et de gérer ses pilotes favoris.
+# 🏎️ Groupie Tracker – Formula One API  
 
+## 🚀 Présentation  
+Groupie Tracker est une application web développée en **Golang**, permettant d'afficher des données sur la **Formule 1** grâce à l'**API Ergast Formula One**. L'application permet d'effectuer des recherches sur les pilotes, circuits et résultats des courses.  
 
-📖 Description
-Groupie Tracker est une application web en Go qui permet d'explorer les pilotes de Formule 1, les circuits, les résultats des courses et d'ajouter des pilotes en favoris.
+### 📌 Fonctionnalités principales :  
+✅ Recherche et filtres avancés sur les pilotes (4 filtres disponibles)  
+✅ Affichage des circuits et résultats de courses par année  
+✅ Système de favoris persistant avec stockage en JSON  
+✅ Gestion des erreurs en cas d’indisponibilité de l’API  
+✅ Interface simple et user-friendly  
 
-Les données sont récupérées dynamiquement via l'API Ergast et affichées sur une interface web utilisant Go, HTML, CSS et JavaScript.
+---
 
+## 📡 API utilisée  
+L’application exploite l’**API Ergast Formula One**, qui fournit des données sur la Formule 1 depuis 1950.  
 
-🚀 Fonctionnalités
-✔️ Affichage de la liste des pilotes de F1 par année
+🔗 **Documentation API :** [Formula One API – Postman](https://www.postman.com/maintenance-astronomer-29796265/f1-api/collection/60v93se/formula-one-api)  
 
-✔️ Affichage des circuits avec leurs informations
+### 🔥 Endpoints exploités  
+- **Pilotes** : [`/drivers`](http://ergast.com/api/f1/{{year}}/drivers) → Liste des pilotes par saison  
+- **Circuits** : [`/circuits`](http://ergast.com/api/f1/{{year}}/circuits) → Liste des circuits par saison  
+- **Résultats de courses** : [`/results`](http://ergast.com/api/f1/{{year}}/{{round}}/results) → Résultats d’un Grand Prix  
 
-✔️ Affichage des résultats des courses par saison et manche
+---
 
-✔️ Ajout et gestion des pilotes favoris 
+## 🛠️ Installation & Exécution  
+> **Prérequis :** Golang installé sur votre machine  
 
-✔️ Filtrage des pilotes par nationalité et numéro
-
-✔️ Interface fluide et rapide grâce à Go et des templates HTML
-
-
-⚙️ Installation
-1️⃣ Prérequis
-Go 1.18+ installé
-Accès à Internet pour récupérer les données via l'API Ergast
-2️⃣ Cloner le projet
-sh
-Copier
-Modifier
-git clone https://github.com/tonrepo/groupie-tracker.git
-cd groupie-tracker
-3️⃣ Lancer le serveur
+### 1️⃣ Clonez le projet  
+```sh
+git clone https://github.com/tomy-21/Groupi-Tracker.git
+cd Groupi-Tracker
+2️⃣ Lancez l’application
 sh
 Copier
 Modifier
 go run main.go
-Le serveur démarre sur : http://localhost:8080
+💡 L’application tourne en local, ouvrez ensuite votre navigateur à l’adresse http://localhost:8080.
 
+🎨 Pages disponibles
+📍 Page d’accueil – Présentation du projet
+📍 Page pilotes – Liste des pilotes avec recherche et filtres avancés
+📍 Page circuits – Liste des circuits par année
+📍 Page résultats – Résultats des courses
+📍 Page favoris – Liste des favoris sauvegardés
+📍 Page recherche – Recherche avancée
+📍 Page à-propos – Détails sur le projet
 
-🖥 Utilisation
-Accéder à la page d'accueil → http://localhost:8080
-Naviguer entre les pages :
-/drivers → Liste des pilotes
-/circuits → Liste des circuits
-/results → Résultats des courses
-/favorites → Pilotes favoris
-Ajouter un pilote en favori en cliquant sur le ❤️
-Voir les pilotes favoris dans la page Favoris
+🏆 Défis rencontrés
+La première page des pilotes a été la plus complexe à réaliser. C’était la première implémentée et celle qui m’a demandé le plus de temps. Elle inclut 4 filtres, ce qui a rendu son développement plus difficile.
+Gestion des erreurs API : L’application gère les erreurs en cas d’indisponibilité de l’API.
+Stockage des favoris : J’ai utilisé des fichiers JSON pour enregistrer la liste des favoris, permettant ainsi une persistance des données.
+📚 Ressources utilisées
+🔹 Postman – Pour tester les endpoints et comprendre les réponses de l’API
+🔹 ChatGPT – Pour obtenir des explications techniques et résoudre certains problèmes
+🔹 YouTube & Forums – Pour trouver des tutoriels et bonnes pratiques en Golang
 
+📝 Exemples de prompts utilisés sur ChatGPT :
+1️⃣ "Comment parser un JSON en Golang ?"
+2️⃣ "Comment mettre en place un système de filtres en Go ?"
+3️⃣ "Comment gérer les erreurs d’une requête HTTP en Go ?"
 
+📌 Auteur
+👤 Nom : Tomy OUADHI
+📂 GitHub : tomy-21
 
-📂 Structure du projet
-csharp
-Copier
-Modifier
-groupie-tracker/
-│── assets/                     # Fichiers statiques (CSS, JavaScript)
-│   ├── styles.css
-│── templates/                   # Templates HTML
-│   ├── base.html
-│   ├── drivers.html
-│   ├── circuits.html
-│   ├── results.html
-│   ├── favorites.html
-│── main.go                      # Serveur principal en Go
-│── README.md                    # Documentation du projet
+📅 Date limite du projet : 10/03/2025 avant 23h59
 
+🔗 Lien du dépôt GitHub : Groupi-Tracker
 
-📄 Détails des pages
-1️⃣ /drivers (Liste des pilotes)
-Affichage des pilotes récupérés via l'API
-Filtrage par nationalité et numéro
-Bouton ❤️ Ajouter aux favoris
-2️⃣ /circuits (Liste des circuits)
-Affichage des circuits avec leurs détails
-Recherche par année
-3️⃣ /results (Résultats des courses)
-Affichage des résultats des courses
-Détails de chaque Grand Prix
-4️⃣ /favorites (Pilotes favoris)
-Liste des pilotes ajoutés en favoris
-Possibilité de les retirer
+💡 Améliorations futures possibles
+✅ Ajouter un mode sombre pour améliorer l’UX
+✅ Intégrer un graphique des performances des pilotes
+✅ Héberger le projet en ligne pour un accès public
 
-
-🔮 Améliorations futures
-✅ Persistance des favoris (localStorage ou base de données)
-✅ Ajout des statistiques pilotes (pôles, victoires)
-✅ Ajout d'un mode sombre
-✅ Animations et transitions CSS
-
-
-✍️ Auteur
-👤 Ton Nom
-📧 Contact : tomy.ouadhi@ynov.com
-🔗 GitHub : https://github.com/tomy-21/Groupi-Tracker/blob/main/Groupi-Tracker/README.md
+🔥 Merci d’avoir lu ce README ! 🚀
