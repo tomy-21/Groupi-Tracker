@@ -10,10 +10,15 @@ Les données sont récupérées dynamiquement via l'API Ergast et affichées sur
 
 🚀 Fonctionnalités
 ✔️ Affichage de la liste des pilotes de F1 par année
+
 ✔️ Affichage des circuits avec leurs informations
+
 ✔️ Affichage des résultats des courses par saison et manche
-✔️ Ajout et gestion des pilotes favoris
+
+✔️ Ajout et gestion des pilotes favoris 
+
 ✔️ Filtrage des pilotes par nationalité et numéro
+
 ✔️ Interface fluide et rapide grâce à Go et des templates HTML
 
 

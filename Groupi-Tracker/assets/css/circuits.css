@@ -149,8 +149,8 @@ button:hover {
     font-size: 3.5rem;
     color: #ffffff;
     font-family: "Racing Sans One", serif;
-  font-weight: 400;
-  font-style: normal;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .circuit-info p {
